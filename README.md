@@ -1,14 +1,14 @@
 # Bien-Chaincode
 This project is a demo for using IBM blockchain.
 It is a chaincode that could be deployed into a network of Hyperledger fabric peer nodes that enables interaction with that network's shared ledger.
-Dependencies
+#Dependencies
 
 The import statement lists a few dependencies that you will need for your chaincode to build successfully.
 
 fmt - contains Println for debugging/logging.
 errors - standard go error format.
 github.com/hyperledger/fabric/core/chaincode/shim - the code that interfaces your golang code with a peer.
-Init()
+#Init()
 
 Init is called when you first deploy your chaincode. As the name implies, this function should be used to do any initialization your chaincode needs. In our example, we use Init to configure the initial state of one variable on the ledger.
 
@@ -28,7 +28,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 }
 This is done by using the shim function stub.PutState. The first argument is the key as a string, and the second argument is the value as an array of bytes. This function may return an error which our code inspects and returns if present.
 
-Invoke()
+#Invoke()
 
 Invoke is called when you want to call chaincode functions to do real work. Invocation transactions will be captured as blocks on the chain. The structure of Invoke is simple. It receives a function argument and based on this argument calls Go functions in the chaincode.
 
@@ -68,7 +68,7 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 }
 This write function should look similar to the Init change you just did. One major difference is that you can now set the key and value for PutState. This function allows you to store any key/value pair you want into the blockchain ledger.
 
-Query()
+#Query()
 
 As the name implies, Query is called whenever you query your chaincode state. Queries do not result in blocks being added to the chain. You will use Query to read the value of your chaincode state's key/value pairs.
 
@@ -106,7 +106,7 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 }
 This read function is using the complement to PutState called GetState. This shim function just takes one string argument. The argument is the name of the key to retrieve. Next, this function returns the value as an array of bytes back to Query, who in turn sends it back to the REST handler.
 
-Main()
+#Main()
 
 Finally, you need to create a short main function that will execute when each peer deploys their instance of the chaincode. It just starts the chaincode and registers it with the peer. You don’t need to add any code for this function. Both chaincode_start.go and chaincode_finished.go have a main function that lives at the top of the file. The function looks like this:
 
@@ -116,3 +116,4 @@ func main() {
         fmt.Printf("Error starting Simple chaincode: %s", err)
     }
 }
+
