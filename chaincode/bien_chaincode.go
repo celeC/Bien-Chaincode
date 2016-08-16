@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"strconv"
 	"encoding/json"
-	"strings"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -31,8 +30,8 @@ type Bien struct{
 		id int `json:"orderId"`
 		name string `json:"name"`
 		state string `json:"state"`
-		price double `json:"price"`
-		postage double `json:"postage"`
+		price string `json:"price"`
+		postage string `json:"postage"`
 		owner string `json:"owner"`
 }
 
@@ -86,8 +85,6 @@ func (t *BienChaincode) Invoke(stub *shim.ChaincodeStub, function string, args [
 		return t.write(stub, args)
 	}else if function == "set_owner" {
 		return t.set_owner(stub, args)
-	}else if function == "set_state" {
-		return t.set_state(stub, args)
 	}else if function == "add_goods" {
 		return t.add_goods(stub, args)
 	}
@@ -174,9 +171,7 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 		fmt.Println("- end set owner-")
 		return nil, nil
 }
-func (t *BienChaincode) set_state(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 
-}
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 var err error
@@ -203,17 +198,17 @@ var err error
 	if len(args[4]) <= 0 {
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
-	price, err := strconv.Atoi(args[3])
+	/*price, err := strconv.Atoi(args[3])
 	if err != nil {
 		return nil, errors.New("price argument must be a numeric string")
 	}
 	postage, err := strconv.Atoi(args[4])
 	if err != nil {
 		return nil, errors.New("postage argument must be a numeric string")
-	}
+	}*/
 	
-
-	str := `{"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "`+args[2]+`","price":"` + strconv.Itoa(args[3]) + `, "postage": "` + strconv.Itoa(args[4]) + `"}`
+	str := `{"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
+	
 	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
