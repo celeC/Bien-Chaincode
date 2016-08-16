@@ -29,12 +29,12 @@ type BienChaincode struct {
 var orderIndexStr ="_orderindex"
 
 type Bien struct{
-		id int 'json:"orderId"'
-		name string 'json:"name"'
-		state string 'json:"state"'
-		price double 'json:"price"'
-		postage double 'json:"postage"'
-		owner string 'json:"owner"'
+		id int `json:"orderId"`
+		name string `json:"name"`
+		state string `json:"state"`
+		price double `json:"price"`
+		postage double `json:"postage"`
+		owner string `json:"owner"`
 }
 
 func main() {
@@ -214,7 +214,7 @@ var err error
 	}
 	
 
-	str := '{"name": "' + args[0] + '", "owner": "' + args[1] + '", "state": "'+args[2]+'","price":"' + strconv.Itoa(args[3]) + ', "postage": "' + strconv.Itoa(args[4]) + '"}'
+	str := `{"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "`+args[2]+`","price":"` + strconv.Itoa(args[3]) + `, "postage": "` + strconv.Itoa(args[4]) + `"}`
 	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
