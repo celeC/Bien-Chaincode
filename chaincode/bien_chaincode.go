@@ -44,7 +44,7 @@ func main() {
 
 // Init resets all the things
 func (t *BienChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	
+	fmt.Printf("hello init chaincode, it is for testing")
 	var Aval int
 	var err error
 
