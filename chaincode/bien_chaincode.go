@@ -175,7 +175,7 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 var err error
-
+fmt.Println("hello add goods")
 	//   0       1       2          3       4
 	// "name", "owner", "state", "price"  "postage"
 	if len(args) != 5 {
