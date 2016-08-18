@@ -30,8 +30,8 @@ type Bien struct{
 		id int `json:"orderId"`
 		name string `json:"name"`
 		state string `json:"state"`
-		price string `json:"price"`
-		postage string `json:"postage"`
+		price int `json:"price"`
+		postage int `json:"postage"`
 		owner string `json:"owner"`
 }
 
@@ -198,14 +198,7 @@ fmt.Println("hello add goods")
 	if len(args[4]) <= 0 {
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
-	/*price, err := strconv.Atoi(args[3])
-	if err != nil {
-		return nil, errors.New("price argument must be a numeric string")
-	}
-	postage, err := strconv.Atoi(args[4])
-	if err != nil {
-		return nil, errors.New("postage argument must be a numeric string")
-	}*/
+	
 	
 	str := `{"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
 	
