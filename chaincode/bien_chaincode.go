@@ -83,9 +83,11 @@ func (t *BienChaincode) Invoke(stub *shim.ChaincodeStub, function string, args [
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
-	}else if function == "set_owner" {
+	} else if function == "set_owner" {
 		return t.set_owner(stub, args)
-	}else if function == "add_goods" {
+	} else if function == "change_state" {
+		return t.change_state(stub, args)
+	} else if function == "add_goods" {
 		return t.add_goods(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function)
@@ -172,6 +174,33 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 		return nil, nil
 }
 
+// read - query function to read key/value pair, then change the data structure's state field
+func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var err error
+	
+	if len(args)<2 {
+	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
+	}
+	
+	fmt.Println("- start change state -")
+	fmt.Println("id:" + args[0] + " - state" + args[1])
+	bienAsBytes, err := stub.GetState(args[0])
+	if err != nil {
+			return nil, errors.New("Failed to get thing")
+		}
+		res := Bien{}
+		json.Unmarshal(bienAsBytes, &res)										//un stringify it aka JSON.parse()
+		res.state = args[1]
+		
+		jsonAsBytes, _ := json.Marshal(res)
+		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
+		if err != nil {
+			return nil, err
+		}
+		
+		fmt.Println("- end change state-")
+		return nil, nil
+}
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 var err error
