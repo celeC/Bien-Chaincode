@@ -158,11 +158,11 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 	fmt.Println(args[0] + " - " + args[1])
 	bienAsBytes, err := stub.GetState(args[0])
 	if err != nil {
-			return nil, errors.New("Failed to get thing")
+			return nil, errors.New("Failed to get item")
 		}
 		res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)										//un stringify it aka JSON.parse()
-		res.owner = args[1]
+		res.owner = args[1] + "_v01"
 		
 		jsonAsBytes, _ := json.Marshal(res)
 		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
