@@ -171,7 +171,8 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 		}
 		
 		fmt.Println("- end set owner-")
-		return nil, nil
+		bienBytes, err := stub.GetState(args[0])
+		return bienBytes, nil
 }
 
 // read - query function to read key/value pair, then change the data structure's state field
@@ -193,13 +194,14 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		res.state = args[1]
 		
 		jsonAsBytes, _ := json.Marshal(res)
-		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
+		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the goods with name as key
 		if err != nil {
 			return nil, err
 		}
 		
 		fmt.Println("- end change state-")
-		return nil, nil
+		bienBytes, err := stub.GetState(args[0])
+		return bienBytes, nil
 }
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -236,7 +238,7 @@ fmt.Println("hello add goods")
 		return nil, err
 	}
 	
-	//get the marble index
+	//get the  index
 	bienAsBytes, err := stub.GetState(orderIndexStr)
 	if err != nil {
 		return nil, errors.New("Failed to get bien index")
