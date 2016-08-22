@@ -232,7 +232,7 @@ fmt.Println("hello add goods")
 	}
 	
 	timestamp := time.Now().Unix()
-	str := `{"id":'+timestamp+',"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
+	str := `{"id":"`+strconv.FormatInt(timestamp , 10)+`","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
 	
 	err = stub.PutState(strconv.FormatInt(timestamp , 10), []byte(str))								//store marble with id as key
 	if err != nil {
