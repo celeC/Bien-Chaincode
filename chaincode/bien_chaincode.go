@@ -17,6 +17,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 	"encoding/json"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -230,10 +231,10 @@ fmt.Println("hello add goods")
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
 	
+	timestamp := time.Now().Unix()
+	str := `{"orderId":"'+timestamp+'","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
 	
-	str := `{"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
-	
-	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
+	err = stub.PutState(timestamp, []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
 	}
@@ -247,10 +248,10 @@ fmt.Println("hello add goods")
 	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
 	
 	//append
-	orderIndex = append(orderIndex, args[0])								//add marble name to index list
+	orderIndex = append(orderIndex, timestamp)								//add bien id to index list
 	fmt.Println("! order(bien) index: ", orderIndex)
 	jsonAsBytes, _ := json.Marshal(orderIndex)
-	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store name of marble
+	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
 
 	fmt.Println("- end add goods")
 	return nil, nil
