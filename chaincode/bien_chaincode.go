@@ -28,7 +28,7 @@ type BienChaincode struct {
 var orderIndexStr ="_orderindex"
 
 type Bien struct{
-		id int `json:"orderId"`
+		id int64 `json:"orderId"`
 		name string `json:"name"`
 		state string `json:"state"`
 		price int `json:"price"`
@@ -232,9 +232,9 @@ fmt.Println("hello add goods")
 	}
 	
 	timestamp := time.Now().Unix()
-	str := `{"orderId":"'+timestamp+'","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
+	str := `{"id":'+timestamp+',"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
 	
-	err = stub.PutState(timestamp, []byte(str))								//store marble with id as key
+	err = stub.PutState(strconv.FormatInt(timestamp , 10), []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +248,7 @@ fmt.Println("hello add goods")
 	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
 	
 	//append
-	orderIndex = append(orderIndex, timestamp)								//add bien id to index list
+	orderIndex = append(orderIndex,strconv.FormatInt(timestamp , 10))								//add bien id to index list
 	fmt.Println("! order(bien) index: ", orderIndex)
 	jsonAsBytes, _ := json.Marshal(orderIndex)
 	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
