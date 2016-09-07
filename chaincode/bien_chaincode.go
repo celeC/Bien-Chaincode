@@ -17,6 +17,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 	"encoding/json"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -27,15 +28,16 @@ type BienChaincode struct {
 var orderIndexStr ="_orderindex"
 
 type Bien struct{
-		id int `json:"orderId"`
+		id int64 `json:"orderId"`
 		name string `json:"name"`
 		state string `json:"state"`
 		price int `json:"price"`
 		postage int `json:"postage"`
 		owner string `json:"owner"`
 }
-
+var logger = shim.NewLogger("SimpleChaincode")
 func main() {
+    logger.SetLevel(shim.LogInfo) 
 	err := shim.Start(new(BienChaincode))
 	if err != nil {
 		fmt.Printf("Error starting BienChaincode chaincode: %s", err)
@@ -47,7 +49,7 @@ func (t *BienChaincode) Init(stub *shim.ChaincodeStub, function string, args []s
 	fmt.Printf("hello init chaincode, it is for testing")
 	var Aval int
 	var err error
-
+    logger.Warning("init logger should be 1 string") 
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
@@ -63,7 +65,7 @@ func (t *BienChaincode) Init(stub *shim.ChaincodeStub, function string, args []s
 	if err != nil {
 		return nil, err
 	}
-	
+	logger.Infof("init logger arg0=%v", args[0])
 	var empty []string
 	jsonAsBytes, _ := json.Marshal(empty)								//marshal an emtpy array of strings to clear the index
 	err = stub.PutState(orderIndexStr, jsonAsBytes)
@@ -83,9 +85,11 @@ func (t *BienChaincode) Invoke(stub *shim.ChaincodeStub, function string, args [
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
-	}else if function == "set_owner" {
+	} else if function == "set_owner" {
 		return t.set_owner(stub, args)
-	}else if function == "add_goods" {
+	} else if function == "change_state" {
+		return t.change_state(stub, args)
+	} else if function == "add_goods" {
 		return t.add_goods(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function)
@@ -135,7 +139,9 @@ func (t *BienChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, e
 	}
 
 	key = args[0]
+	
 	valAsbytes, err := stub.GetState(key)
+	logger.Infof("query.read logger valAsbytes=%v", valAsbytes)
 	if err != nil {
 		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
 		return nil, errors.New(jsonResp)
@@ -156,7 +162,7 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 	fmt.Println(args[0] + " - " + args[1])
 	bienAsBytes, err := stub.GetState(args[0])
 	if err != nil {
-			return nil, errors.New("Failed to get thing")
+			return nil, errors.New("Failed to get item")
 		}
 		res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)										//un stringify it aka JSON.parse()
@@ -169,9 +175,40 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 		}
 		
 		fmt.Println("- end set owner-")
-		return nil, nil
+		return t.read(stub,args)
+		//return bienBytes, nil
 }
 
+// read - query function to read key/value pair, then change the data structure's state field
+func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var err error
+	
+	if len(args)<2 {
+	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
+	}
+	
+	fmt.Println("- start change state -")
+	fmt.Println("id:" + args[0] + " - state" + args[1])
+	bienAsBytes, err := stub.GetState(args[0])
+	logger.Infof("change_state logger bienAsBytes=%v", bienAsBytes)
+	if err != nil {
+			return nil, errors.New("Failed to get thing")
+		}
+		res := Bien{}
+		json.Unmarshal(bienAsBytes, &res)										//un stringify it aka JSON.parse()
+		res.state = args[1]
+		
+		jsonAsBytes, _ := json.Marshal(res)
+		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the goods with name as key
+		if err != nil {
+			return nil, err
+		}
+		logger.Infof("query.read logger jsonAsBytes=%v", jsonAsBytes)
+		fmt.Println("- end change state-")
+		//t.write(stub,args)
+		//return t.read(stub,args)
+		return nil, nil
+}
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 var err error
@@ -196,18 +233,18 @@ fmt.Println("hello add goods")
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
 	if len(args[4]) <= 0 {
-		return nil, errors.New("4th argument must be a non-empty string")
+		return nil, errors.New("5th argument must be a non-empty string")
 	}
 	
+	timestamp := time.Now().Unix()
+	str := `{"id":"`+strconv.FormatInt(timestamp , 10)+`","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
 	
-	str := `{"name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
-	
-	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
+	err = stub.PutState(strconv.FormatInt(timestamp , 10), []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
 	}
 	
-	//get the marble index
+	//get the  index
 	bienAsBytes, err := stub.GetState(orderIndexStr)
 	if err != nil {
 		return nil, errors.New("Failed to get bien index")
@@ -216,10 +253,10 @@ fmt.Println("hello add goods")
 	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
 	
 	//append
-	orderIndex = append(orderIndex, args[0])								//add marble name to index list
+	orderIndex = append(orderIndex,strconv.FormatInt(timestamp , 10))								//add bien id to index list
 	fmt.Println("! order(bien) index: ", orderIndex)
 	jsonAsBytes, _ := json.Marshal(orderIndex)
-	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store name of marble
+	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
 
 	fmt.Println("- end add goods")
 	return nil, nil
