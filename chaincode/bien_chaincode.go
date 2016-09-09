@@ -197,7 +197,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)										//un stringify it aka JSON.parse()
 		res.state = args[1]
-		
+		logger.Infof("change_state res: logger res=%v", res)
 		jsonAsBytes, _ := json.Marshal(res)
 		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the goods with name as key
 		logger.Infof("change_state putstate: logger jsonAsBytes=%v", jsonAsBytes)
