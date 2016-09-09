@@ -45,7 +45,7 @@ func main() {
 }
 
 // Init resets all the things
-func (t *BienChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *BienChaincode) Init(stub shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Printf("hello init chaincode, it is for testing")
 	var Aval int
 	var err error
@@ -77,7 +77,7 @@ func (t *BienChaincode) Init(stub *shim.ChaincodeStub, function string, args []s
 }
 
 // Invoke isur entry point to invoke a chaincode function
-func (t *BienChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *BienChaincode) Invoke(stub shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
@@ -98,7 +98,7 @@ func (t *BienChaincode) Invoke(stub *shim.ChaincodeStub, function string, args [
 }
 
 // Query is our entry point for queries
-func (t *BienChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *BienChaincode) Query(stub shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
 
 	// Handle different functions
@@ -111,7 +111,7 @@ func (t *BienChaincode) Query(stub *shim.ChaincodeStub, function string, args []
 }
 
 // write - invoke function to write key/value pair
-func (t *BienChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *BienChaincode) write(stub shim.ChaincodeStub, args []string) ([]byte, error) {
 	var key, value string
 	var err error
 	fmt.Println("running write()")
@@ -130,7 +130,7 @@ func (t *BienChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, 
 }
 
 // read - query function to read key/value pair
-func (t *BienChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *BienChaincode) read(stub shim.ChaincodeStub, args []string) ([]byte, error) {
 	var key, jsonResp string
 	var err error
 
@@ -151,7 +151,7 @@ func (t *BienChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, e
 }
 
 // read - query function to read key/value pair
-func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *BienChaincode) set_owner(stub shim.ChaincodeStub, args []string) ([]byte, error) {
 	var err error
 	
 	if len(args)<2 {
@@ -180,7 +180,7 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 }
 
 // read - query function to read key/value pair, then change the data structure's state field
-func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *BienChaincode) change_state(stub shim.ChaincodeStub, args []string) ([]byte, error) {
 	var err error
 	
 	if len(args)<2 {
@@ -210,7 +210,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		return nil, nil
 }
 
-func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *BienChaincode) add_goods(stub shim.ChaincodeStub, args []string) ([]byte, error) {
 var err error
 fmt.Println("hello add goods")
 	//   0       1       2          3       4
