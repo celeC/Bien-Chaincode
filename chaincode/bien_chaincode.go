@@ -190,7 +190,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	fmt.Println("- start change state -")
 	fmt.Println("id:" + args[0] + " - state" + args[1])
 	bienAsBytes, err := stub.GetState(args[0])
-	logger.Infof("change_state logger bienAsBytes=%v", bienAsBytes)
+	logger.Infof("change_state getState: logger bienAsBytes=%v", bienAsBytes)
 	if err != nil {
 			return nil, errors.New("Failed to get thing")
 		}
@@ -200,13 +200,14 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		
 		jsonAsBytes, _ := json.Marshal(res)
 		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the goods with name as key
+		logger.Infof("change_state putstate: logger jsonAsBytes=%v", jsonAsBytes)
 		if err != nil {
 			return nil, err
 		}
-		logger.Infof("query.read logger jsonAsBytes=%v", jsonAsBytes)
+		bien2AsBytes, err := stub.GetState(args[0])
+		logger.Infof("query.read after bien2AsBytes=%v", bien2AsBytes)
 		fmt.Println("- end change state-")
-		//t.write(stub,args)
-		//return t.read(stub,args)
+
 		return nil, nil
 }
 
