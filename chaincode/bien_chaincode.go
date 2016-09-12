@@ -185,7 +185,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	//id  "name", "owner", "state", "price"  "postage"
 	var err error
 	
-	if len(args)<5 {
+	if len(args)<2 {
 	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
 	}
 
@@ -195,13 +195,14 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 			return nil, errors.New("Failed to get thing")
 		}
 	
-    
-   	res := Bien{}
+    var res Bien
+   //	res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)	
 		logger.Infof("change_state before set res: logger res=%v", res)									//un stringify it aka JSON.parse()
 		res.state = args[1]
 
 		logger.Infof("change_state res: logger res=%v", res)
+		fmt.Println(res.id, ":",res.name, ":", res.owner, ":", res.state, ":", res.price, ":", res.postage)
 		jsonAsBytes, _ := json.Marshal(res)
 		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the goods with name as key
 
@@ -211,11 +212,9 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		
 		fmt.Println("- end change state-")
 
-		valAsbytes, err := stub.GetState(args[0])
-	logger.Infof("query.read logger valAsbytes=%v", valAsbytes)
-	
-
-	return valAsbytes, nil
+		//valAsbytes, err := stub.GetState(args[0])
+	//logger.Infof("query.read logger valAsbytes=%v", valAsbytes)
+	return nil, nil
 		
 }
 
