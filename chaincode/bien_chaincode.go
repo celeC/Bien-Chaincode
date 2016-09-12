@@ -212,7 +212,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
 	fmt.Println("get order(bien) index: ", orderIndex)
 	//append
-	orderIndex = append(orderIndex,strconv.FormatInt(timestamp , 10))								//add bien id to index list
+	orderIndex = append(orderIndex,args[0])								//add bien id to index list
 	fmt.Println("append:! order(bien) index: ", orderIndex)
 	jsonAsBytes, _ := json.Marshal(orderIndex)
 	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
