@@ -189,35 +189,14 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
 	}
 
-	/*bienAsBytes, err := stub.GetState(args[0])
-	logger.Infof("change_state getState: logger bienAsBytes=%v", bienAsBytes)*/
+	bienAsBytes, err := stub.GetState(args[0])
+	logger.Infof("change_state getState: logger bienAsBytes=%v", bienAsBytes)
 	if err != nil {
 			return nil, errors.New("Failed to get thing")
 		}
 	
     
-    str := `{"id":"`+args[0]+`","name": "` + args[1] + `", "owner": "` + args[2] + `", "state": "` + args[3]+ `", "price": ` + args[4] + `, "postage": ` + args[5] +`}`
-	
-	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
-	if err != nil {
-		return nil, err
-	}
-	
-	//get the  index
-	bienAsBytes, err := stub.GetState(orderIndexStr)
-	if err != nil {
-		return nil, errors.New("Failed to get bien index")
-	}
-	var orderIndex []string
-	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
-	fmt.Println("get order(bien) index: ", orderIndex)
-	//append
-	orderIndex = append(orderIndex,args[0])								//add bien id to index list
-	fmt.Println("append:! order(bien) index: ", orderIndex)
-	jsonAsBytes, _ := json.Marshal(orderIndex)
-	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
-	return nil, nil
-	/*	res := Bien{}
+   	res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)	
 		logger.Infof("change_state before set res: logger res=%v", res)									//un stringify it aka JSON.parse()
 		res.state = args[1]
@@ -232,10 +211,12 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		
 		fmt.Println("- end change state-")
 
-		return nil, nil
+		valAsbytes, err := stub.GetState(args[0])
+	logger.Infof("query.read logger valAsbytes=%v", valAsbytes)
 	
+
+	return valAsbytes, nil
 		
-		**/
 }
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
