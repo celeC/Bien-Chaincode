@@ -175,8 +175,8 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 		}
 		
 		fmt.Println("- end set owner-")
-		return t.read(stub,args)
-		//return bienBytes, nil
+		
+		return nil, nil
 }
 
 // read - query function to read key/value pair, then change the data structure's state field
@@ -186,9 +186,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	if len(args)<2 {
 	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
 	}
-	
-	fmt.Println("- start change state -")
-	fmt.Println("id:" + args[0] + " - state" + args[1])
+
 	bienAsBytes, err := stub.GetState(args[0])
 	logger.Infof("change_state getState: logger bienAsBytes=%v", bienAsBytes)
 	if err != nil {
