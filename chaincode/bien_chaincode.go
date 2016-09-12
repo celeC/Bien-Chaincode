@@ -181,9 +181,11 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 
 // read - query function to read key/value pair, then change the data structure's state field
 func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+//   0       1       2          3       4     5
+	//id  "name", "owner", "state", "price"  "postage"
 	var err error
 	
-	if len(args)<2 {
+	if len(args)<5 {
 	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
 	}
 
@@ -192,7 +194,30 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	if err != nil {
 			return nil, errors.New("Failed to get thing")
 		}
-		res := Bien{}
+	
+    
+    str := `{"id":"`+args[0]+`","name": "` + args[1] + `", "owner": "` + args[2] + `", "state": "` + args[3]+ `", "price": ` + args[4] + `, "postage": ` + args[5] +`}`
+	
+	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
+	if err != nil {
+		return nil, err
+	}
+	
+	//get the  index
+	bienAsBytes, err := stub.GetState(orderIndexStr)
+	if err != nil {
+		return nil, errors.New("Failed to get bien index")
+	}
+	var orderIndex []string
+	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
+	fmt.Println("get order(bien) index: ", orderIndex)
+	//append
+	orderIndex = append(orderIndex,strconv.FormatInt(timestamp , 10))								//add bien id to index list
+	fmt.Println("append:! order(bien) index: ", orderIndex)
+	jsonAsBytes, _ := json.Marshal(orderIndex)
+	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
+	return nil, nil
+	/*	res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)	
 		logger.Infof("change_state before set res: logger res=%v", res)									//un stringify it aka JSON.parse()
 		res.state = args[1]
@@ -208,6 +233,9 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		fmt.Println("- end change state-")
 
 		return nil, nil
+		/**
+		
+		**/
 }
 
 func (t *BienChaincode) add_goods(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -251,10 +279,10 @@ fmt.Println("hello add goods")
 	}
 	var orderIndex []string
 	json.Unmarshal(bienAsBytes, &orderIndex)							//un stringify it aka JSON.parse()
-	
+	fmt.Println("get order(bien) index: ", orderIndex)
 	//append
 	orderIndex = append(orderIndex,strconv.FormatInt(timestamp , 10))								//add bien id to index list
-	fmt.Println("! order(bien) index: ", orderIndex)
+	fmt.Println("append:! order(bien) index: ", orderIndex)
 	jsonAsBytes, _ := json.Marshal(orderIndex)
 	err = stub.PutState(orderIndexStr, jsonAsBytes)						//store id of bien
 
