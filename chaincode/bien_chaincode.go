@@ -189,8 +189,8 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 	 return nil,errors.New("Incorrect number of arguments. Expecting 2")
 	}
 
-	bienAsBytes, err := stub.GetState(args[0])
-	logger.Infof("change_state getState: logger bienAsBytes=%v", bienAsBytes)
+	/*bienAsBytes, err := stub.GetState(args[0])
+	logger.Infof("change_state getState: logger bienAsBytes=%v", bienAsBytes)*/
 	if err != nil {
 			return nil, errors.New("Failed to get thing")
 		}
@@ -233,7 +233,7 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
 		fmt.Println("- end change state-")
 
 		return nil, nil
-		/**
+	
 		
 		**/
 }
