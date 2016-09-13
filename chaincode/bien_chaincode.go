@@ -153,6 +153,48 @@ func (t *BienChaincode) Query(stub *shim.ChaincodeStub, function string, args []
 	if function == "read" { //read a variable
 		return t.read(stub, args)
 	}
+	if args[0] == "GetAllgoods" {
+		fmt.Println("Getting all GDs")
+		allGDs, err := GetAllgoods(stub)
+		if err != nil {
+			fmt.Println("Error from getallgoods")
+			return nil, err
+		} else {
+			allGDsBytes, err1 := json.Marshal(&allGDs)
+			if err1 != nil {
+				fmt.Println("Error marshalling allGDs")
+				return nil, err1
+			}	
+			fmt.Println("All success, returning allGDs")
+			return allGDsBytes, nil		 
+		}
+	}else if args[0] == "GetGD" {
+		fmt.Println("Getting particular GD")
+		gd, err := GetGD(args[1], stub)
+		if err != nil {
+			fmt.Println("Error Getting particular GD")
+			return nil, err
+		} else {
+			gdBytes, err1 := json.Marshal(&gd)
+			if err1 != nil {
+				fmt.Println("Error marshalling the gd")
+				return nil, err1
+			}	
+			fmt.Println("All success, returning the gd")
+			return gdBytes, nil		 
+		}
+	} else {
+		fmt.Println("Generic Query call")
+		bytes, err := stub.GetState(args[0])
+
+		if err != nil {
+			fmt.Println("Some error happenend")
+			return nil, errors.New("Some Error happened")
+		}
+
+		fmt.Println("All success, returning from generic")
+		return bytes, nil		
+	}
 	fmt.Println("query did not find func: " + function)
 
 	return nil, errors.New("Received unknown function query")
@@ -251,7 +293,7 @@ func (t *BienChaincode) issueCommercialGoods(stub *shim.ChaincodeStub, args []st
 		return nil, errors.New("Invalid commercial goods issue")
 	}
 
-	
+	fmt.Println(" goods",goods)
 	// Set the issuer to be the owner of all quantity
 	var owner Owner
 	owner.Company = goods.Issuer
@@ -268,12 +310,12 @@ func (t *BienChaincode) issueCommercialGoods(stub *shim.ChaincodeStub, args []st
 	goods.GDSID = goods.Issuer + suffix
 	
 	fmt.Println("Getting State on goods " + goods.GDSID)
-	cpRxBytes, err := stub.GetState(goodsPrefix+goods.GDSID)
-	if cpRxBytes == nil {
+	gdRxBytes, err := stub.GetState(goodsPrefix+goods.GDSID)
+	if gdRxBytes == nil {
 		fmt.Println("GDSID does not exist, creating it")
 		goodsBytes, err := json.Marshal(&goods)
 		if err != nil {
-			fmt.Println("Error marshalling cp")
+			fmt.Println("Error marshalling gd")
 			return nil, errors.New("Error issuing commercial goods")
 		}
 		err = stub.PutState(goodsPrefix+goods.GDSID, goodsBytes)
@@ -441,6 +483,58 @@ fmt.Println("hello add goods")
 	fmt.Println("- end add goods")
 	return nil, nil
 }*/
+
+func GetAllgoods(stub *shim.ChaincodeStub) ([]Goods, error){
+	
+	var allGDs []Goods
+	
+	// Get list of all the keys
+	keysBytes, err := stub.GetState("PaperKeys")
+	if err != nil {
+		fmt.Println("Error retrieving paper keys")
+		return nil, errors.New("Error retrieving paper keys")
+	}
+	var keys []string
+	err = json.Unmarshal(keysBytes, &keys)
+	if err != nil {
+		fmt.Println("Error unmarshalling paper keys")
+		return nil, errors.New("Error unmarshalling paper keys")
+	}
+
+	// Get all the gds
+	for _, value := range keys {
+		gdBytes, err := stub.GetState(value)
+		
+		var gd Goods
+		err = json.Unmarshal(gdBytes, &gd)
+		if err != nil {
+			fmt.Println("Error retrieving gd " + value)
+			return nil, errors.New("Error retrieving gd " + value)
+		}
+		
+		fmt.Println("Appending Goods" + value)
+		allGDs = append(allGDs, gd)
+	}	
+	
+	return allGDs, nil
+}
+func GetGD(gdid string, stub *shim.ChaincodeStub) (Goods, error){
+	var gd Goods
+
+	gdBytes, err := stub.GetState(gdid)
+	if err != nil {
+		fmt.Println("Error retrieving gd " + gdid)
+		return gd, errors.New("Error retrieving gd " + gdid)
+	}
+		
+	err = json.Unmarshal(gdBytes, &gd)
+	if err != nil {
+		fmt.Println("Error unmarshalling gd " + gdid)
+		return gd, errors.New("Error unmarshalling gd " + gdid)
+	}
+		
+	return gd, nil
+}
 var seventhDigit = map[int]string{
 	1:  "A",
 	2:  "B",
