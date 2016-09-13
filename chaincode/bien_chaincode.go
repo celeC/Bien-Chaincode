@@ -247,7 +247,7 @@ func (t *BienChaincode) issueCommercialGoods(stub *shim.ChaincodeStub, args []st
 	fmt.Println("Unmarshalling goods")
 	err = json.Unmarshal([]byte(args[0]), &goods)
 	if err != nil {
-		fmt.Println("error invalid goods issue")
+		fmt.Println(err)
 		return nil, errors.New("Invalid commercial goods issue")
 	}
 
