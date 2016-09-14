@@ -489,7 +489,7 @@ func GetAllgoods(stub *shim.ChaincodeStub) ([]Goods, error){
 	var allGDs []Goods
 	
 	// Get list of all the keys
-	keysBytes, err := stub.GetState("PaperKeys")
+	keysBytes, err := stub.GetState(orderIndexStr)
 	if err != nil {
 		fmt.Println("Error retrieving paper keys")
 		return nil, errors.New("Error retrieving paper keys")
