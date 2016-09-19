@@ -253,8 +253,12 @@ fmt.Println("hello add goods")
 	res.name    = args[0]
 	res.owner   = args[1]
 	res.state   = args[2]
-	res.price   = strconv.Atoi(args[3])
-	res.postage = strconv.Atoi(args[4])
+	res.price, err   = strconv.Atoi(args[3])
+	res.postage, err = strconv.Atoi(args[4])
+
+	if err != nil {
+		return nil, err
+	}
 
 	goodBytes, _ := json.Marshal(res)
 	err = stub.PutState(strconv.FormatInt(timestamp , 10), goodBytes)		
