@@ -246,15 +246,12 @@ fmt.Println("hello add goods")
 	
 	timestamp := time.Now().Unix()
 	//str := `{"id":"`+strconv.FormatInt(timestamp , 10)+`","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
-	//======
-	
-	res := Bien{}
-	res.id      = 100000 
-	res.name    = "mouse"
-	res.owner   = "no"
-	res.state   = "new"
-	res.price = 100
-	res.postage = 10
+
+//======
+    _price, _ := strconv.Atoi(args[3])
+    _postaget,_:=strconv.Atoi(args[4])
+	var res = Bien{id:timestamp,name:args[0],owner:args[1],state:args[2],price:_price,postage:_postaget}
+
 //	res.id      = timestamp 
 //	res.name    = args[0]
 //	res.owner   = args[1]
@@ -266,7 +263,7 @@ fmt.Println("hello add goods")
 		return nil, err
 	}
 
-	goodBytes, _ := json.Marshal(res)
+	goodBytes, _ := json.Marshal(&res)
 	err = stub.PutState("test", goodBytes)	
 	err = stub.PutState(strconv.FormatInt(timestamp , 10), goodBytes)
 			
