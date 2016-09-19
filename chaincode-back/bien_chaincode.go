@@ -245,9 +245,21 @@ fmt.Println("hello add goods")
 	}
 	
 	timestamp := time.Now().Unix()
-	str := `{"id":"`+strconv.FormatInt(timestamp , 10)+`","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
+	//str := `{"id":"`+strconv.FormatInt(timestamp , 10)+`","name": "` + args[0] + `", "owner": "` + args[1] + `", "state": "` + args[2]+ `", "price": ` + args[3] + `, "postage": ` + args[4] +`}`
+	//======
 	
-	err = stub.PutState(strconv.FormatInt(timestamp , 10), []byte(str))								//store marble with id as key
+	res := Bien{}
+	res.id      = strconv.FormatInt(timestamp , 10) //id from timestamp
+	res.name    = args[0]
+	res.owner   = args[1]
+	res.state   = args[2]
+	res.price   = args[3]
+	res.postage = args[4]
+
+	goodBytes, _ := json.Marshal(res)
+	err = stub.PutState(strconv.FormatInt(timestamp , 10), goodBytes)		
+	//=======
+	//err = stub.PutState(strconv.FormatInt(timestamp , 10), []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
 	}
