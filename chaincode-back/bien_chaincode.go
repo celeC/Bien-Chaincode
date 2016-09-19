@@ -249,12 +249,12 @@ fmt.Println("hello add goods")
 	//======
 	
 	res := Bien{}
-	res.id      = strconv.FormatInt(timestamp , 10) //id from timestamp
+	res.id      = timestamp 
 	res.name    = args[0]
 	res.owner   = args[1]
 	res.state   = args[2]
-	res.price   = args[3]
-	res.postage = args[4]
+	res.price   = strconv.Atoi(args[3])
+	res.postage = strconv.Atoi(args[4])
 
 	goodBytes, _ := json.Marshal(res)
 	err = stub.PutState(strconv.FormatInt(timestamp , 10), goodBytes)		
