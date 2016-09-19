@@ -249,7 +249,7 @@ fmt.Println("hello add goods")
 	//======
 	
 	res := Bien{}
-	res.id      = "0000" 
+	res.id      = 100000 
 	res.name    = "mouse"
 	res.owner   = "no"
 	res.state   = "new"
