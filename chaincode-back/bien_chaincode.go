@@ -28,12 +28,12 @@ type BienChaincode struct {
 var orderIndexStr ="_orderindex"
 
 type Bien struct{
-		id int64 `json:"orderId"`
-		name string `json:"name"`
-		state string `json:"state"`
-		price int `json:"price"`
-		postage int `json:"postage"`
-		owner string `json:"owner"`
+		ID int64 `json:"orderId"`
+		Name string `json:"name"`
+		State string `json:"state"`
+		Price int `json:"price"`
+		Postage int `json:"postage"`
+		Owner string `json:"owner"`
 }
 var logger = shim.NewLogger("SimpleChaincode")
 func main() {
@@ -166,7 +166,7 @@ func (t *BienChaincode) set_owner(stub *shim.ChaincodeStub, args []string) ([]by
 		}
 		res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)										//un stringify it aka JSON.parse()
-		res.owner = args[1]
+		res.Owner = args[1]
 		
 		jsonAsBytes, _ := json.Marshal(res)
 		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
@@ -199,10 +199,10 @@ func (t *BienChaincode) change_state(stub *shim.ChaincodeStub, args []string) ([
    //	res := Bien{}
 		json.Unmarshal(bienAsBytes, &res)	
 		logger.Infof("change_state before set res: logger res=%v", res)									//un stringify it aka JSON.parse()
-		res.state = args[1]
+		res.State = args[1]
 
 		logger.Infof("change_state res: logger res=%v", res)
-		fmt.Println(res.id, ":",res.name, ":", res.owner, ":", res.state, ":", res.price, ":", res.postage)
+		
 		jsonAsBytes, _ := json.Marshal(res)
 		err = stub.PutState(args[0], jsonAsBytes)								//rewrite the goods with name as key
 
@@ -250,7 +250,7 @@ fmt.Println("hello add goods")
 //======
     _price, _ := strconv.Atoi(args[3])
     _postaget,_:=strconv.Atoi(args[4])
-	var res = Bien{id:timestamp,name:args[0],owner:args[1],state:args[2],price:_price,postage:_postaget}
+	var res = Bien{ID:timestamp,Name:args[0],Owner:args[1],State:args[2],Price:_price,Postage:_postaget}
 
 //	res.id      = timestamp 
 //	res.name    = args[0]
